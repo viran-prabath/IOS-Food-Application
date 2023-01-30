@@ -34,4 +34,26 @@ foodItemRouter.get("/:foodId", async (req, res) => {
   }
 });
 
+
+// Get food item details by cuisine
+foodItemRouter.get("/:cuisine", async (req, res) => {
+  try {
+    let food = await foodItemModel.findOne({
+      cuisine: req.params.cuisine,
+    });
+
+    if (!food) {
+      let errorObj = {
+        message: "The given cuisine does not exist",
+        statusCode: "NOT FOUND",
+      };
+      return res.status(404).send(errorObj);
+    }
+
+    res.status(200).send(food);
+  } catch (ex) {
+    return res.status(500).send(ex.message);
+  }
+});
+
 module.exports = foodItemRouter;
