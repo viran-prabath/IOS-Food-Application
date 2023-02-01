@@ -2,6 +2,7 @@ const dotenv = require("dotenv");
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const serverless = require("serverless-http");
 
 //Config .env
 dotenv.config();
@@ -38,3 +39,6 @@ mongoose
   })
   .then(() => console.log("Successfully connected to mongodb !"))
   .catch((err) => console.log(`Error has occured: ${err}`));
+
+module.exports = app;
+module.exports.handler = serverless(app);
