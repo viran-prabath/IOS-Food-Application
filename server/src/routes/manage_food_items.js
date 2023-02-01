@@ -36,9 +36,9 @@ foodItemRouter.get("/:foodId", async (req, res) => {
 
 
 // Get food item details by cuisine
-foodItemRouter.get("/:cuisine", async (req, res) => {
+foodItemRouter.get("/cuisine/:cuisine", async (req, res) => {
   try {
-    let food = await foodItemModel.findOne({
+    let food = await foodItemModel.find({
       cuisine: req.params.cuisine,
     });
 

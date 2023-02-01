@@ -10,8 +10,8 @@ dotenv.config();
 // Crete a Express Framework
 const app = express();
 
-// Declare a PORT
-const PORT = process.env.APP_RUNNING_PORT || 3000;
+// // Declare a PORT
+// const PORT = process.env.APP_RUNNING_PORT || 3000;
 
 //Add Routes
 const foodItemRouter = require("./src/routes/manage_food_items");
@@ -25,10 +25,10 @@ app.use("/api/favorites", favFoodRouter);
 app.use("/api/user", UserManageRouter);
 
 
-// Check runing port
-app.listen(PORT, () => {
-  console.log(`Successfully runing on Port : ${PORT}`);
-});
+// // Check runing port
+// app.listen(PORT, () => {
+//   console.log(`Successfully runing on Port : ${PORT}`);
+// });
 
 // Mongo DB Connections
 mongoose.set("strictQuery", false);
