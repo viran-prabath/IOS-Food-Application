@@ -31,12 +31,17 @@ manage_user_Router.get("/userdata/email=:email&password=:password", async (req, 
     let user = await userModel.findOne({
       email: req.params.email,
     });
+    if (!user) {
+      let errorObj = {
+        message: "not found"
+      };
 
-    if (!user) return res.status(400).send("NOT_FOUND");
+      return res.status(404).send(errorObj);
+    }
 
     let pwValid = await bcrypt.compare(req.params.password, user.password);
 
-    if (!pwValid) return res.status(400).send("PW_INC");
+    if (!pwValid) return res.status(400).send("Password Incorrect");
 
     res.status(200).send(user.userId);
   } catch (err) {
@@ -68,6 +73,22 @@ manage_user_Router.get("/userdata/email=:email&password=:password", async (req, 
 //     return res.status(500).send(`Error: ${err.message}`);
 //   }
 // });
+
+// try {
+//   let user = await userModel.findOne({
+//     email: req.params.email,
+//   });
+
+//   if (!user) return res.status(400).send("NOT_FOUND");
+
+//   let pwValid = await bcrypt.compare(req.params.password, user.password);
+
+//   if (!pwValid) return res.status(400).send("PW_INC");
+
+//   res.status(200).send(user.userId);
+// } catch (err) {
+//   return res.status(500).send(`Error: ${err.message}`);
+// }
 
 
 module.exports = manage_user_Router;
