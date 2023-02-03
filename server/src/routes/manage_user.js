@@ -31,14 +31,8 @@ manage_user_Router.get("/userdata/email=:email&password=:password", async (req, 
     let user = await userModel.findOne({
       email: req.params.email,
     });
-    if (!user) {
-      let errorObj = {
-        message: "The given email address does not match in our system",
-        statusCode: "NOT FOUND",
-      };
-
-      return res.status(404).send(errorObj);
-    }
+    
+    if (!user) return res.status(400).send("Email was not found");
 
     let pwValid = await bcrypt.compare(req.params.password, user.password);
 
