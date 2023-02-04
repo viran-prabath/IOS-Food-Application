@@ -72,21 +72,4 @@ manage_user_Router.post("/userdata", async (req, res) => {
   }
 });
 
-// try {
-//   let user = await userModel.findOne({
-//     email: req.params.email,
-//   });
-
-//   if (!user) return res.status(400).send("NOT_FOUND");
-
-//   let pwValid = await bcrypt.compare(req.params.password, user.password);
-
-//   if (!pwValid) return res.status(400).send("PW_INC");
-
-//   res.status(200).send(user.userId);
-// } catch (err) {
-//   return res.status(500).send(`Error: ${err.message}`);
-// }
-
-
 module.exports = manage_user_Router;

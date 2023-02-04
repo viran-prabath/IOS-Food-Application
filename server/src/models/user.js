@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
-  
+const Schema = mongoose.Schema;
+
   const userSchema = new mongoose.Schema({
     userId: { type: Schema.ObjectId, auto: true },
     first_name: { type: String, require: true },
