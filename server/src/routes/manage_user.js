@@ -9,7 +9,6 @@ manage_user_Router.post("/", async (req, res) => {
     let hashData = await bcrypt.genSalt(12);
     let hashedPw = await bcrypt.hash(req.body.password, hashData);
     const user = new userModel({
-      userId: req.body.userId,
       first_name: req.body.first_name,
       last_name: req.body.last_name,
       email: req.body.email,
