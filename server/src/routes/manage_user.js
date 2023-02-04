@@ -14,7 +14,6 @@ manage_user_Router.post("/", async (req, res) => {
       last_name: req.body.last_name,
       email: req.body.email,
       password: hashedPw,
-      imageUrl: req.body.imageUrl,
     });
 
     const newUser = await user.save();
