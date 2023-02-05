@@ -2,12 +2,12 @@ const express = require("express");
 const foodItemRouter = express.Router();
 const foodItemModel = require("../models/food_items");
 
-//Get all food items
+// Get all foods
 foodItemRouter.get("/", async (req, res) => {
   try {
-    let food_items = await foodItemModel.find();
+    let food = await foodItemModel.find();
 
-    res.status(200).send(food_items);
+    res.status(200).send(food);
   } catch (err) {
     return res.status(500).send(`Error: ${err.message}`);
   }
@@ -20,7 +20,13 @@ foodItemRouter.get("/:foodId", async (req, res) => {
       foodId: req.params.foodId,
     });
 
-    if (!food) return res.status(404).send("Food Item Not Found");
+    if (!food) {
+      let errorObj = {
+        message: "The given food Id does not exist",
+        statusCode: "NOT FOUND",
+      };
+      return res.status(404).send(errorObj);
+    }
 
     res.status(200).send(food);
   } catch (ex) {
@@ -28,6 +34,26 @@ foodItemRouter.get("/:foodId", async (req, res) => {
   }
 });
 
+// Get food item details by food name
+foodItemRouter.get("/store/:name", async (req, res) => {
+  try {
+    let food = await foodItemModel.find({
+      name: req.params.name,
+    });
+
+    if (!food) {
+      let errorObj = {
+        message: "The given food name does not exist",
+        statusCode: "NOT FOUND",
+      };
+      return res.status(404).send(errorObj);
+    }
+
+    res.status(200).send(food);
+  } catch (ex) {
+    return res.status(500).send(ex.message);
+  }
+});
 
 // Get food item details by cuisine
 foodItemRouter.get("/cuisine/:cuisine", async (req, res) => {
@@ -36,7 +62,13 @@ foodItemRouter.get("/cuisine/:cuisine", async (req, res) => {
       cuisine: req.params.cuisine,
     });
 
-    if (!food) return res.status(404).send("Cuisine Not Found");
+    if (!food) {
+      let errorObj = {
+        message: "The given cuisine type does not exist",
+        statusCode: "NOT FOUND",
+      };
+      return res.status(404).send(errorObj);
+    }
 
     res.status(200).send(food);
   } catch (ex) {
