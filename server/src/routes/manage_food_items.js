@@ -20,13 +20,7 @@ foodItemRouter.get("/:foodId", async (req, res) => {
       foodId: req.params.foodId,
     });
 
-    if (!food) {
-      let errorObj = {
-        message: "The given food Id does not exist",
-        statusCode: "NOT FOUND",
-      };
-      return res.status(404).send(errorObj);
-    }
+    if (!food) return res.status(404).send("Food Item Not Found");
 
     res.status(200).send(food);
   } catch (ex) {
@@ -42,13 +36,7 @@ foodItemRouter.get("/cuisine/:cuisine", async (req, res) => {
       cuisine: req.params.cuisine,
     });
 
-    if (!food) {
-      let errorObj = {
-        message: "The given cuisine does not exist",
-        statusCode: "NOT FOUND",
-      };
-      return res.status(404).send(errorObj);
-    }
+    if (!food) return res.status(404).send("Cuisine Not Found");
 
     res.status(200).send(food);
   } catch (ex) {

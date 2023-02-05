@@ -4,132 +4,127 @@ const favFoodRouter = express.Router();
 const favFoodModel = require("../models/fav_food_items");
 const foodModel = require("../models/food_items");
 
+// Get favorite foods details by user id
+favFoodRouter.get("/:userId", async (req, res) => {
+  try {
+    let favoriteFoods = await favFoodModel
+      .find({
+        userId: req.params.userId,
+      })
+      .sort({
+        createdDateTime: "desc",
+      });
+
+    if (favoriteFoods.length === 0) {
+      let errorObj = {
+        message:
+          "The given user does not match any favorite foods on our system",
+        statusCode: "NOT FOUND",
+      };
+
+      return res.status(404).send(errorObj);
+    }
+
+    //Get foods details according to the user
+    let foods = await async.map(favoriteFoods, async (food) => {
+      return await foodModel.findOne({ foodId: food.foodId }).select({
+        foodId: 1,
+        name: 1,
+        imageUrl: 1,
+      });
+    });
+
+    if (!foods) {
+      let errorObj = {
+        message: "The given food Id does not match any food on our system",
+        statusCode: "NOT FOUND",
+      };
+
+      return res.status(404).send(errorObj);
+    }
+
+    res.status(200).send(foods);
+  } catch (err) {
+    return res.status(500).send(`Error: ${err.message}`);
+  }
+});
+
 // Insert favorite food detail
 favFoodRouter.post("/", async (req, res) => {
-    try {
-      //Check mandatory value userId
-      if (!req.body.userId) {
-        let errorObj = {
-          message: "UserId is required.",
-          status: "SYSTEM ERROR",
-        };
-        return res.status(400).send(errorObj);
-      }
-  
-      //Check mandatory value foodId
-      if (!req.body.foodId) {
-        let errorObj = {
-          message: "foodId is required.",
-          status: "SYSTEM ERROR",
-        };
-        return res.status(400).send(errorObj);
-      }
-  
-      //Check food is alredy added
-      let checkExistfavFood = await favFoodModel.findOne({
-        userId: req.body.userId,
-        foodId: req.body.foodId,
-      });
-  
-      if (checkExistfavFood) {
-        let errorObj = {
-          message: "This food data alredy added.",
-          status: "ALREDY EXIST",
-        };
-        return res.status(400).send(errorObj);
-      }
-  
-      //Insert favorite food data
-      let favFood = new favFoodModel({
-        userId: req.body.userId,
-        foodId: req.body.foodId,
-      });
-  
-      const newFavFood = await favFood.save();
-      res.status(200).send(newFavFood);
-    } catch (err) {
-      return res.status(500).send(`Error: ${err.message}`);
+  try {
+    //Check mandatory value userId
+    if (!req.body.userId) {
+      let errorObj = {
+        message: "Cannot find UserId.",
+        status: "SYSTEM ERROR",
+      };
+      return res.status(400).send(errorObj);
     }
-  });
 
-
-  // Get favorite food details by user id
-  favFoodRouter.get("/:userId", async (req, res) => {
-    try {
-
-      let favFoodDetails = await favFoodModel
-        .find({
-          userId: req.params.userId,
-        })
-        .sort({
-          createdDateTime: "desc",
-        });
-  
-      if (favFoodDetails.length === 0) {
-        let errorObj = {
-          message:
-            "The given user does not match any favorite outlet on our system",
-          statusCode: "NOT FOUND",
-        };
-  
-        return res.status(404).send(errorObj);
-      }
-  
-      //If has user wise favorite outlet, then get outlet details
-      let foodData = await async.map(favFoodDetails, async (food) => {
-        return await foodModel
-          .findOne({ foodId: food.foodId })
-          .select({
-            foodId: 1,
-            name: 1,
-            imageUrl: 1,
-          });
-      });
-  
-      if (!foodData) {
-        let errorObj = {
-          message:
-            "The given food outlet Id by favorite list but, does not match any food outlet on our system",
-          statusCode: "NOT FOUND",
-        };
-  
-        return res.status(404).send(errorObj);
-      }
-  
-      res.status(200).send(foodOutlets);
-    } catch (err) {
-      return res.status(500).send(`Error: ${err.message}`);
+    //Check mandatory value foodOutletId
+    if (!req.body.foodId) {
+      let errorObj = {
+        message: "Cannot find food.",
+        status: "SYSTEM ERROR",
+      };
+      return res.status(400).send(errorObj);
     }
-  });
 
-  // Delete favorite food by userId & foodId
-  favFoodRouter.delete("/:userId/:foodId", async (req, res) => {
-    try {
-      //Check outlet is alredy added in the system
-      let checkExistfavFood = await favFoodModel.findOne({
-        userId: req.params.userId,
-        foodId: req.params.foodId,
-      });
-  
-      if (!checkExistfavFood) {
-        let errorObj = {
-          message:
-            "The given user Id & outlet Id does not match any favorite outlet on our system",
-          statusCode: "SYSTEM ERROR : NOT FOUND",
-        };
-        return res.status(404).send(errorObj);
-      }
-  
-      //Delete favorite outlet
-      let deletedFavFood = await favFoodModel.findOneAndDelete({
-        userId: req.params.userId,
-        foodId: req.params.foodId,
-      });
-  
-      res.status(200).send(deletedFavFood);
-    } catch (err) {
-      return res.status(500).send(`Error: ${err.message}`);
+    //Check outlet is alredy added
+    let checkExistfavFood = await favFoodModel.findOne({
+      userId: req.body.userId,
+      foodId: req.body.foodId,
+    });
+
+    if (checkExistfavFood) {
+      let errorObj = {
+        message: "This food data alredy added.",
+        status: "ALREDY EXISTS",
+      };
+      return res.status(400).send(errorObj);
     }
-  });
+
+    //Insert favorite food data
+    let favoriteFood = new favFoodModel({
+      userId: req.body.userId,
+      foodId: req.body.foodId,
+    });
+
+    const newfavoriteFood = await favoriteFood.save();
+    res.status(200).send("Successfully Add Favorite Food List!");
+  } catch (err) {
+    return res.status(500).send(`Error: ${err.message}`);
+  }
+});
+
+// Delete favorite food by userId & outletId
+favFoodRouter.delete("/:userId/:foodId", async (req, res) => {
+  try {
+    //Check outlet is alredy added in the system
+    let checkExistfavOutlet = await favFoodModel.findOne({
+      userId: req.params.userId,
+      foodId: req.params.foodId,
+    });
+
+    if (!checkExistfavOutlet) {
+      let errorObj = {
+        message:
+          "The given user Id & outlet Id does not match any favorite food on our system",
+        statusCode: "SYSTEM ERROR : NOT FOUND",
+      };
+      return res.status(404).send(errorObj);
+    }
+
+    //Delete favorite outlet
+    let deletedFavoriteFood = await favFoodModel.findOneAndDelete({
+      userId: req.params.userId,
+      foodId: req.params.outletId,
+    });
+
+    res.status(200).send(deletedFavoriteFood);
+  } catch (err) {
+    return res.status(500).send(`Error: ${err.message}`);
+  }
+});
 
 module.exports = favFoodRouter;
